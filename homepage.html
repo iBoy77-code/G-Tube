@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>G-Tube</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: white;
+    }
+    .cover-photo {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .channel-info {
+      display: flex;
+      align-items: center;
+      padding: 1rem 2rem;
+      margin-top: -40px;
+    }
+    .profile-pic {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #111;
+      object-fit: cover;
+    }
+    .profile-details {
+      margin-left: 1rem;
+    }
+    .channel-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff0000;
+    }
+    .channel-handle {
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    .channel-meta {
+      font-size: 0.9rem;
+      color: #888;
+    }
+    .channel-bio, .channel-controls, .tabs {
+      padding: 0 2rem;
+    }
+    .channel-bio {
+      margin-top: 0.5rem;
+      color: #ccc;
+    }
+    .channel-controls {
+      margin-top: 1rem;
+    }
+    .channel-controls button {
+      margin-right: 10px;
+      background: #333;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .tabs {
+      display: flex;
+      margin-top: 1rem;
+      border-bottom: 1px solid #333;
+    }
+    .tabs a {
+      color: white;
+      padding: 1rem 1rem;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+    .tabs a.active {
+      border-color: #ff0000;
+    }
+    .search-bar {
+      margin: 1rem 2rem;
+      width: calc(100% - 4rem);
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      background: #222;
+      color: white;
+    }
+    .videos-container {
+      padding: 2rem;
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    .video-card {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .video-card iframe,
+    .video-card video,
+    .video-card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .upload-box {
+      padding: 2rem;
+      border-top: 1px solid #222;
+    }
+    .upload-box input {
+      margin-top: 1rem;
+      background: #222;
+      padding: 0.5rem;
+      border: none;
+      color: white;
+      border-radius: 6px;
+    }
+    .preview {
+      margin-top: 1rem;
+    }
+    .preview video {
+      width: 100%;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <img src="cover G-tube.jpg" class="cover-photo" alt="Cover" />
+
+  <div class="channel-info">
+    <img src="Godmonut(0).jpg" class="profile-pic" alt="Profile" />
+    <div class="profile-details">
+      <div class="channel-name">Godmonut</div>
+      <div class="channel-handle">www.youtube.com/@Godmonut-z8w</div>
+      <div class="channel-meta"></div>
+    </div>
+  </div>
+
+  <div class="channel-bio">
+    Godmonut is a channel that holds the core values that man was designed to explore God the same way astronauts explore space. We explore God in art and tech so get ready for a ride.
+  </div>
+
+   <div class="channel-controls">
+    <button id="likeButton" onclick="toggleLike()"> Like <span id="likeCount">0</span></button>
+    <button onclick="shareChannel()">Share</button>
+    <button id="followButton" onclick="toggleFollow()">Follow</button>
+  </div>
+
+  <input type="text" class="search-bar" placeholder="Search videos..." oninput="filterVideos(this.value)" />
+
+  <nav class="tabs">
+    <a href="#" class="active" onclick="switchTab(event, 'home')">VIDEOS</a>
+    <a href="#" onclick="switchTab(event, 'shorts')">ARTS</a>
+    <a href="#" onclick="switchTab(event, 'posts')">BLOGS</a>
+  </nav>
+
+  <section id="home" class="videos-container"></section>
+  <section id="shorts" class="videos-container" style="display:none;"></section>
+  <section id="posts" class="videos-container" style="display:none;">
+    <div class="video-card">No blog content yet.</div>
+  </section>
+
+  <section class="upload-box">
+    <label for="upload">Upload a video:</label><br />
+    <input type="file" id="upload" accept="video/*" onchange="previewVideo(event)" />
+    <div class="preview" id="videoPreview"></div>
+  </section>
+
+  <script>
+const videos = [
+  { title: "NEVER STOP", type: "youtube", id: "Hjjf1En3MjQ" },
+  { title: "CALL YOU NAME", type: "youtube", id: "oUGMiRl7xtM" },
+  { title: "INVINCIBLE", type: "youtube", id: "Y-0PzTmRzJM" },
+  { title: "ALIGNMENT CHANT RAP COVER", type: "youtube", id: "6pzumd3NnG0" },
+  { title: "IN YOU LOVE", type: "youtube", id: "Wu4GtC_y5Q8" },
+  { title: "MY 2025 ANTHEM", type: "youtube", id: "QqZ_FRLhFD8" },
+  { title: "YESHUA FREESTYLE RAP", type: "youtube", id: "oKNo3rG3AOY" },
+  { title: "KUSA DA KAI", type: "youtube", id: "ucKNInDYtCU" }
+];
+
+
+    const arts = [
+      { title: "HEAVENLY RISTRICTION", src: "ART/VIDU TOJI.jpg" },
+      { title: "UCHIHA ME", src: "ART/shisui me.jpg" },
+      { title: "LEVEL UP", src: "ART/LEVEL UP.jpg" }
+    ];
+
+    const videoContainer = document.getElementById('home');
+    const artContainer = document.getElementById('shorts');
+
+    function renderVideos(filter = '') {
+  videoContainer.innerHTML = '';
+  const filtered = videos.filter(v => v.title.toLowerCase().includes(filter.toLowerCase()));
+  filtered.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.innerHTML = `
+      <h4>${v.title}</h4>
+      ${
+        v.type === 'youtube'
+          ? `<iframe src="https://www.youtube.com/embed/${v.id}" frameborder="0" allowfullscreen></iframe>`
+          : `<video controls src="${v.src}"></video>`
+      }
+    `;
+    videoContainer.appendChild(card);
+  });
+}
+
+
+    function renderArt() {
+      artContainer.innerHTML = '';
+      arts.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+          <h4>${a.title}</h4>
+          <img src="${a.src}" alt="${a.title}" />
+        `;
+        artContainer.appendChild(card);
+      });
+    }
+
+    function filterVideos(value) {
+      renderVideos(value);
+    }
+
+    function switchTab(evt, tabId) {
+      evt.preventDefault();
+      document.querySelectorAll('nav.tabs a').forEach(a => a.classList.remove('active'));
+      evt.target.classList.add('active');
+      document.querySelectorAll('section.videos-container').forEach(s => s.style.display = 'none');
+      document.getElementById(tabId).style.display = 'grid';
+      if (tabId === 'shorts') renderArt();
+    }
+
+    function previewVideo(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('videoPreview');
+      if (file) {
+        const url = URL.createObjectURL(file);
+        preview.innerHTML = `<video controls src="${url}"></video>`;
+      } else {
+        preview.innerHTML = '';
+      }
+    }
+
+    
+    /*-- localized liked button --*/
+  const likeKey = 'g-tube-like-status';
+  const countKey = 'g-tube-like-count';
+
+  function initLike() {
+    const liked = localStorage.getItem(likeKey) === 'true';
+    const count = parseInt(localStorage.getItem(countKey)) || 0;
+
+    updateLikeButton(liked, count);
+  }
+
+  function toggleLike() {
+    let liked = localStorage.getItem(likeKey) === 'true';
+    let count = parseInt(localStorage.getItem(countKey)) || 0;
+
+    liked = !liked;
+    localStorage.setItem(likeKey, liked);
+
+    count = liked ? count + 1 : Math.max(0, count - 1);
+    localStorage.setItem(countKey, count);
+
+    updateLikeButton(liked, count);
+  }
+
+  function updateLikeButton(liked, count) {
+    const btn = document.getElementById('likeButton');
+    const counter = document.getElementById('likeCount');
+    counter.textContent = count;
+    btn.style.backgroundColor = liked ? '#ff0000' : 'pink';
+  }
+
+  window.onload = initLike;
+
+
+      /*--localized share button--*/
+    function shareChannel() {
+  const shareData = {
+    title: 'Godmonut Channel',
+    text: 'Check out Godmonut on G-Tube!',
+    url: window.location.href
+  };
+
+  if (navigator.share) {
+    navigator.share(shareData)
+      .then(() => console.log('Channel shared successfully'))
+      .catch((error) => console.error('Share failed:', error));
+  } else {
+    alert('Sharing is not supported on this device. Copy this link instead:\n' + shareData.url);
+  }
+}
+     
+/* FOLLOW BUTTON*/
+    const followKey = 'g-tube-follow-status';
+    function initFollow() {
+      const followed = localStorage.getItem(followKey) === 'true';
+      updateFollowButton(followed);
+    }
+    function toggleFollow() {
+      let followed = localStorage.getItem(followKey) === 'true';
+      followed = !followed;
+      localStorage.setItem(followKey, followed);
+      updateFollowButton(followed);
+    }
+    function updateFollowButton(followed) {
+      const btn = document.getElementById('followButton');
+      btn.textContent = followed ? 'Following ✔️' : 'Follow';
+      btn.style.backgroundColor = followed ? '#ff0000' : '#333';
+    }
+
+    window.onload = function () {
+      initFollow();
+      renderVideos();
+    };
+  </script>
+</body>
+</html>
